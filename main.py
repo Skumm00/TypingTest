@@ -102,7 +102,85 @@ def typing_test():
     else:
         print("Goodbye! Have a great day!")
     
-declareall()
+def display_instructions():
+    print("Instructions:")
+    print("1. Read the sentence carefully before you start typing.")
+    print("2. Type the sentence as accurately as possible.")
+    print("3. Press Enter to submit your typing.")
+    print("4. Review your results and try to improve with each attempt.\n")
+
+def track_typing_speed(start_time, end_time):
+    typing_duration = end_time - start_time
+    if typing_duration < 10:
+        return "Excellent speed!"
+    elif typing_duration < 30:
+        return "Good speed!"
+    else:
+        return "You can improve your speed!"
+
+def get_best_score():
+    if os.path.exists("best_score.txt"):
+        with open("best_score.txt", "r") as file:
+            return float(file.read().strip())
+    return float('inf')
+
+def save_best_score(score):
+    with open("best_score.txt", "w") as file:
+        file.write(f"{score:.2f}")
+
+def display_best_score(best_score):
+    print(f"Your best score is: {best_score:.2f} seconds\n")
+
+def show_typing_statistics(user_input, original_sentence):
+    total_chars = len(original_sentence)
+    typed_chars = len(user_input)
+    percent_accurate = (typed_chars / total_chars) * 100
+    print(f"Characters typed: {typed_chars}/{total_chars}")
+    print(f"Typing accuracy: {percent_accurate:.2f}%")
+
+#display mistakes function
+def display_mistake_details(mismatches):
+    if mismatches:
+        print("Mistake Details:")
+        for index, orig_word, user_word in mismatches:
+            print(f"Word {index + 1}: Original '{orig_word}' - Your input '{user_word}'")
+    else:
+        print("No mistakes found.")
+        
+#typing test function
+def typing_test():
+    display_instructions()
+    best_score = get_best_score()
+    display_best_score(best_score)
+    
+    while True:
+        sentence = select_sentence()
+        user_input, elapsed_time = get_user_input(sentence)
+        mismatches = check_accuracy(sentence, user_input)
+        accuracy = calculate_accuracy(sentence, mismatches)
+        
+        print("\nThank you for typing!")
+        print(f"Time taken: {elapsed_time:.2f} seconds")
+        print(track_typing_speed(0, elapsed_time))
+        print("Test Summary")
+        print("============")
+        print(f"Sentence: {sentence}")
+        print(f"Your input: {user_input}")
+        
+        provide_feedback(mismatches, accuracy)
+        show_typing_statistics(user_input, sentence)
+        display_mistake_details(mismatches)
+        
+        if elapsed_time < best_score:
+            save_best_score(elapsed_time)
+            print("Congratulations! You've set a new best time!")
+
+        give_advice(accuracy)
+        
+        if not replay_test():
+            print("Goodbye! Have a great day!")
+            break
+  
 #run the main function 
 if __name__ == "__main__":
     typing_test()
