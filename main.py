@@ -1,7 +1,8 @@
-#required libraries
+# Required libraries
 import time
 import random
 import datetime
+import os
 
 # List of sentences for the typing test
 sentences = [
@@ -35,22 +36,22 @@ def typing_test():
     rannum = random.randint(0, len(sentences) - 1)
     sentence = sentences[rannum]
     
-    #Give a welcome to typing test screen
+    # Give a welcome to typing test screen
     print("Welcome to the Typing Test!")
     print("===========================")
     print("Your task is to type the following sentence as quickly and accurately as you can.")
     print()
     
-    #Gives the sentence
+    # Gives the sentence
     print("Here is the sentence:")
     print(sentence)
     print()
     
-    #Make the input work properly now
+    # Make the input work properly now
     input("Press Enter when you are ready to start typing")
     print("Start typing now!")
     
-    #declaring all vars
+    # Declaring all vars
     start_time = time.time()
     
     user_input = input()
@@ -73,7 +74,7 @@ def typing_test():
     print("============")
     print(f"Sentence: {sentence}")
     print(f"Your input: {user_input}")
-    #check mismatches
+    # Check mismatches
     if not mismatches:
         print("Congratulations! Your typing was perfect!")
     else:
@@ -84,12 +85,11 @@ def typing_test():
     accuracy = (1 - len(mismatches) / len(sentence.split())) * 100
     print(f"Typing accuracy: {accuracy:.2f}%")
     
-    #add better functionality
+    # Add better functionality
     print()
     print("Additional Features:")
     
-
-    #Give Advice
+    # Give Advice
     if accuracy < 80:
         print("Tip: Try practicing with simpler sentences or use typing practice tools.")
     else:
@@ -118,12 +118,6 @@ def track_typing_speed(start_time, end_time):
     else:
         return "You can improve your speed!"
 
-def get_best_score():
-    if os.path.exists("best_score.txt"):
-        with open("best_score.txt", "r") as file:
-            return float(file.read().strip())
-    return float('inf')
-
 def save_best_score(score):
     with open("best_score.txt", "w") as file:
         file.write(f"{score:.2f}")
@@ -138,7 +132,7 @@ def show_typing_statistics(user_input, original_sentence):
     print(f"Characters typed: {typed_chars}/{total_chars}")
     print(f"Typing accuracy: {percent_accurate:.2f}%")
 
-#display mistakes function
+# Display mistakes function
 def display_mistake_details(mismatches):
     if mismatches:
         print("Mistake Details:")
@@ -147,16 +141,16 @@ def display_mistake_details(mismatches):
     else:
         print("No mistakes found.")
 
-#get current time
+# Get current time
 def get_current_time():
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-#save the test function
+# Save the test function
 def log_typing_test(session_details):
     with open("typing_test_log.txt", "a") as log_file:
         log_file.write(f"{session_details}\n")
 
-#generate a report
+# Generate a report
 def generate_summary_report(elapsed_time, accuracy, mismatches):
     report = f"Typing Test Summary Report\n"
     report += f"=========================\n"
@@ -171,34 +165,74 @@ def generate_summary_report(elapsed_time, accuracy, mismatches):
         report += "No mistakes found.\n"
     return report
 
-#display how long session was
+# Display how long session was
 def display_session_duration(start_time, end_time):
     duration = end_time - start_time
     print(f"Total session duration: {duration:.2f} seconds")
 
-#display word count
+# Display word count
 def display_word_count(sentence, user_input):
     original_word_count = len(sentence.split())
     typed_word_count = len(user_input.split())
     print(f"Original sentence word count: {original_word_count}")
     print(f"Typed sentence word count: {typed_word_count}")
 
-#suggest typing software 
+# Suggest typing software 
 def suggest_typing_software():
     print("\nFor further improvement, you might consider using specialized typing software.")
     print("Some popular ones include TypingClub, NitroType, and Fast.com")
 
-#show typing performance
+# Show typing performance
 def review_typing_performance():
     review = input("Would you like to review your typing performance statistics? (yes/no): ").strip().lower()
     return review == 'yes'
 
-#typing test function
+# Function to select a random sentence
+def select_sentence():
+    return random.choice(sentences)
+
+# Function to get user input and track elapsed time
+def get_user_input(sentence):
+    print("Here is the sentence:")
+    print(sentence)
+    input("Press Enter when you are ready to start typing")
+    print("Start typing now!")
+    start_time = time.time()
+    user_input = input()
+    end_time = time.time()
+    return user_input, end_time - start_time
+
+# Function to calculate typing accuracy
+def calculate_accuracy(original, mismatches):
+    return (1 - len(mismatches) / len(original.split())) * 100
+
+# Function to provide feedback based on mismatches and accuracy
+def provide_feedback(mismatches, accuracy):
+    if not mismatches:
+        print("Congratulations! Your typing was perfect!")
+    else:
+        print("There were some mistakes:")
+        for index, orig_word, user_word in mismatches:
+            print(f"Word {index + 1}: Original '{orig_word}' - Your input '{user_word}'")
+    print(f"Typing accuracy: {accuracy:.2f}%")
+
+# Function to prepare for a new typing test
+def prepare_for_new_test():
+    print("\nPreparing for a new typing test...")
+    time.sleep(2)
+    print("You are now ready for a new test!\n")
+
+# Function to handle replay logic
+def replay_test():
+    return input("Would you like to take another typing test? (yes/no): ").strip().lower() == 'yes'
+
+# Main function
 def typing_test():
-    display_instructions()
-    best_score = get_best_score()
-    display_best_score(best_score)
-    
+    best_score = float('inf')
+    if os.path.exists("best_score.txt"):
+        with open("best_score.txt", "r") as file:
+            best_score = float(file.read().strip())
+
     while True:
         sentence = select_sentence()
         user_input, elapsed_time = get_user_input(sentence)
@@ -234,7 +268,8 @@ def typing_test():
         if not replay_test():
             print("Goodbye! Have a great day!")
             break
-        prepare_for_new_test()  
-#run the main function 
+        prepare_for_new_test()
+
+# Run the main function 
 if __name__ == "__main__":
     typing_test()
