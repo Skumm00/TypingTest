@@ -1,7 +1,7 @@
 #required libraries
 import time
 import random
-
+import datetime
 
 # List of sentences for the typing test
 sentences = [
@@ -146,7 +146,53 @@ def display_mistake_details(mismatches):
             print(f"Word {index + 1}: Original '{orig_word}' - Your input '{user_word}'")
     else:
         print("No mistakes found.")
-        
+
+#get current time
+def get_current_time():
+    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+#save the test function
+def log_typing_test(session_details):
+    with open("typing_test_log.txt", "a") as log_file:
+        log_file.write(f"{session_details}\n")
+
+#generate a report
+def generate_summary_report(elapsed_time, accuracy, mismatches):
+    report = f"Typing Test Summary Report\n"
+    report += f"=========================\n"
+    report += f"Test Date and Time: {get_current_time()}\n"
+    report += f"Time Taken: {elapsed_time:.2f} seconds\n"
+    report += f"Typing Accuracy: {accuracy:.2f}%\n"
+    if mismatches:
+        report += "Mistakes:\n"
+        for index, orig_word, user_word in mismatches:
+            report += f"  Word {index + 1}: Original '{orig_word}' - Your input '{user_word}'\n"
+    else:
+        report += "No mistakes found.\n"
+    return report
+
+#display how long session was
+def display_session_duration(start_time, end_time):
+    duration = end_time - start_time
+    print(f"Total session duration: {duration:.2f} seconds")
+
+#display word count
+def display_word_count(sentence, user_input):
+    original_word_count = len(sentence.split())
+    typed_word_count = len(user_input.split())
+    print(f"Original sentence word count: {original_word_count}")
+    print(f"Typed sentence word count: {typed_word_count}")
+
+#suggest typing software 
+def suggest_typing_software():
+    print("\nFor further improvement, you might consider using specialized typing software.")
+    print("Some popular ones include TypingClub, NitroType, and Fast.com")
+
+#show typing performance
+def review_typing_performance():
+    review = input("Would you like to review your typing performance statistics? (yes/no): ").strip().lower()
+    return review == 'yes'
+
 #typing test function
 def typing_test():
     display_instructions()
@@ -174,13 +220,21 @@ def typing_test():
         if elapsed_time < best_score:
             save_best_score(elapsed_time)
             print("Congratulations! You've set a new best time!")
-
-        give_advice(accuracy)
+        
+        display_word_count(sentence, user_input)
+        display_session_duration(0, elapsed_time)
+        
+        if review_typing_performance():
+            report = generate_summary_report(elapsed_time, accuracy, mismatches)
+            print("\n" + report)
+            log_typing_test(report)
+        
+        suggest_typing_software()
         
         if not replay_test():
             print("Goodbye! Have a great day!")
             break
-  
+        prepare_for_new_test()  
 #run the main function 
 if __name__ == "__main__":
     typing_test()
